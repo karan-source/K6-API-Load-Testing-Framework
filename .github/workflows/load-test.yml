@@ -1,0 +1,115 @@
+name: Load Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Test profile to run
+        type: choice
+        default: smoke
+        options: [smoke, load, stress, contention]
+      data_mode:
+        description: Payload selection mode
+        type: choice
+        default: sequential
+        options: [sequential, random]
+
+env:
+  API_REPOSITORY: karan-source/Entity-Framework-Core-Save-Optimization
+  API_URL: http://localhost:5181
+  # Ephemeral service-container credential. It exists only for the life of this job and is
+  # never valid anywhere else, so it is intentionally not a repository secret.
+  SA_PASSWORD: SaveLab(Ephemeral)Pwd1
+
+jobs:
+  load-test:
+    name: ${{ inputs.profile || 'smoke' }} profile
+    runs-on: ubuntu-latest
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: SaveLab(Ephemeral)Pwd1
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'SaveLab(Ephemeral)Pwd1' -C -Q 'SELECT 1' -b"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+          --health-start-period 30s
+
+    steps:
+      - name: Check out load tests
+        uses: actions/checkout@v4
+
+      - name: Check out target API
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.API_REPOSITORY }}
+          path: api
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build API
+        working-directory: api
+        run: dotnet build src/SaveLab.Api -c Release
+
+      - name: Start API
+        working-directory: api
+        env:
+          ConnectionStrings__SaveLab: Server=localhost,1433;Database=SaveLab;User Id=sa;Password=${{ env.SA_PASSWORD }};TrustServerCertificate=True
+        run: |
+          dotnet run --project src/SaveLab.Api -c Release --no-build --no-launch-profile \
+            --urls ${{ env.API_URL }} > "$GITHUB_WORKSPACE/api.log" 2>&1 &
+          echo "API_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Wait for API
+        run: |
+          for attempt in $(seq 1 40); do
+            if curl -sf "${{ env.API_URL }}/swagger/v1/swagger.json" > /dev/null; then
+              echo "API responded after ${attempt} attempt(s)."
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::API did not become ready in time."
+          exit 1
+
+      - name: Set up k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run k6
+        run: |
+          k6 run \
+            -e TEST_PROFILE=${{ inputs.profile || 'smoke' }} \
+            -e DATA_MODE=${{ inputs.data_mode || 'sequential' }} \
+            -e BASE_URL=${{ env.API_URL }} \
+            -e VERBOSE=true \
+            save-comparison-load-test.js
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-reports-${{ inputs.profile || 'smoke' }}-${{ github.run_number }}
+          path: reports/
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Show API log
+        if: failure()
+        run: tail -n 200 "$GITHUB_WORKSPACE/api.log" || true
+
+      - name: Stop API
+        if: always()
+        run: kill "$API_PID" 2>/dev/null || true

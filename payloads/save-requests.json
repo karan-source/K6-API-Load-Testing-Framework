@@ -1,0 +1,22 @@
+[
+  { "customerRef": "CUST00001", "firstName": "Ada",     "lastName": "Lovelace",  "regionCode": 2, "addressLine1": "1 Analytical Way",   "city": "London",     "triggersExternalSync": true },
+  { "customerRef": "CUST00002", "firstName": "Grace",   "lastName": "Hopper",    "regionCode": 3, "addressLine1": "2 Compiler Court",   "city": "New York",   "triggersExternalSync": false },
+  { "customerRef": "CUST00003", "firstName": "Alan",    "lastName": "Turing",    "regionCode": 4, "addressLine1": "3 Enigma Road",      "city": "Manchester", "triggersExternalSync": true },
+  { "customerRef": "CUST00004", "firstName": "Edsger",  "lastName": "Dijkstra",  "regionCode": 1, "addressLine1": "4 Shortest Path",    "city": "Rotterdam",  "triggersExternalSync": false },
+  { "customerRef": "CUST00005", "firstName": "Barbara", "lastName": "Liskov",    "regionCode": 2, "addressLine1": "5 Substitution St",  "city": "Boston",     "triggersExternalSync": true },
+  { "customerRef": "CUST00006", "firstName": "Donald",  "lastName": "Knuth",     "regionCode": 3, "addressLine1": "6 Literate Lane",    "city": "Stanford",   "triggersExternalSync": false },
+  { "customerRef": "CUST00007", "firstName": "Margaret","lastName": "Hamilton",  "regionCode": 4, "addressLine1": "7 Apollo Avenue",    "city": "Houston",    "triggersExternalSync": true },
+  { "customerRef": "CUST00008", "firstName": "Ken",     "lastName": "Thompson",  "regionCode": 1, "addressLine1": "8 Unix Street",      "city": "Murray Hill","triggersExternalSync": false },
+  { "customerRef": "CUST00009", "firstName": "Radia",   "lastName": "Perlman",   "regionCode": 2, "addressLine1": "9 Spanning Tree",    "city": "Seattle",    "triggersExternalSync": true },
+  { "customerRef": "CUST00010", "firstName": "Leslie",  "lastName": "Lamport",   "regionCode": 3, "addressLine1": "10 Paxos Place",     "city": "Palo Alto",  "triggersExternalSync": false },
+  { "customerRef": "CUST00011", "firstName": "Jean",    "lastName": "Bartik",    "regionCode": 4, "addressLine1": "11 ENIAC Estate",    "city": "Philadelphia","triggersExternalSync": true },
+  { "customerRef": "CUST00012", "firstName": "Tony",    "lastName": "Hoare",     "regionCode": 1, "addressLine1": "12 Quicksort Quay",  "city": "Oxford",     "triggersExternalSync": false },
+  { "customerRef": "CUST00013", "firstName": "Frances", "lastName": "Allen",     "regionCode": 2, "addressLine1": "13 Optimizer Row",   "city": "Peekskill",  "triggersExternalSync": true },
+  { "customerRef": "CUST00014", "firstName": "Vint",    "lastName": "Cerf",      "regionCode": 3, "addressLine1": "14 Protocol Park",   "city": "Reston",     "triggersExternalSync": false },
+  { "customerRef": "CUST00015", "firstName": "Adele",   "lastName": "Goldberg",  "regionCode": 4, "addressLine1": "15 Smalltalk Square","city": "Palo Alto",  "triggersExternalSync": true },
+  { "customerRef": "CUST00016", "firstName": "Bjarne",  "lastName": "Stroustrup","regionCode": 1, "addressLine1": "16 Template Terrace","city": "Aarhus",     "triggersExternalSync": false },
+  { "customerRef": "CUST00017", "firstName": "Anita",   "lastName": "Borg",      "regionCode": 2, "addressLine1": "17 Systers Street",  "city": "Palo Alto",  "triggersExternalSync": true },
+  { "customerRef": "CUST00018", "firstName": "Linus",   "lastName": "Torvalds",  "regionCode": 3, "addressLine1": "18 Kernel Close",    "city": "Helsinki",   "triggersExternalSync": false },
+  { "customerRef": "CUST00019", "firstName": "Shafi",   "lastName": "Goldwasser","regionCode": 4, "addressLine1": "19 Zero Knowledge",  "city": "Cambridge",  "triggersExternalSync": true },
+  { "customerRef": "CUST00020", "firstName": "Guido",   "lastName": "van Rossum","regionCode": 1, "addressLine1": "20 Indentation Ave", "city": "Amsterdam",  "triggersExternalSync": false }
+]

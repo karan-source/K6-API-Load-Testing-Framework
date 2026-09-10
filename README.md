@@ -1,6 +1,6 @@
 # k6 API Load Testing Framework
 
-[![Load Test](https://github.com/karan-source/k6-api-load-testing-framework/actions/workflows/load-test.yml/badge.svg)](https://github.com/karan-source/k6-api-load-testing-framework/actions/workflows/load-test.yml)
+[![Load Test](https://github.com/karan-source/K6-API-Load-Testing-Framework/actions/workflows/load-test.yml/badge.svg)](https://github.com/karan-source/K6-API-Load-Testing-Framework/actions/workflows/load-test.yml)
 
 A config-driven [k6](https://k6.io) framework that load-tests two implementations of the same
 API endpoint side by side and reports which one holds up.
@@ -61,7 +61,7 @@ const succeeded = res.status === 200 && body !== null && body.success === true;
 ## Framework structure
 
 ```
-k6-api-load-testing-framework/
+K6-API-Load-Testing-Framework/
 ├── save-comparison-load-test.js   # Entry point: options, setup, scenario exports, summary
 ├── run-tests.ps1                  # PowerShell runner with preflight checks
 ├── config/

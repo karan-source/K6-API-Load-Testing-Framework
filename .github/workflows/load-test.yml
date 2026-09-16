@@ -21,9 +21,6 @@ on:
 env:
   API_REPOSITORY: karan-source/Entity-Framework-Core-Save-Optimization
   API_URL: http://localhost:5181
-  # Ephemeral service-container credential. It exists only for the life of this job and is
-  # never valid anywhere else, so it is intentionally not a repository secret.
-  SA_PASSWORD: SaveLab(Ephemeral)Pwd1
 
 jobs:
   load-test:
@@ -35,11 +32,11 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           ACCEPT_EULA: "Y"
-          MSSQL_SA_PASSWORD: SaveLab(Ephemeral)Pwd1
+          MSSQL_SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'SaveLab(Ephemeral)Pwd1' -C -Q 'SELECT 1' -b"
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${{ secrets.SA_PASSWORD }}' -C -Q 'SELECT 1' -b"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 12
@@ -67,7 +64,7 @@ jobs:
       - name: Start API
         working-directory: api
         env:
-          ConnectionStrings__SaveLab: Server=localhost,1433;Database=SaveLab;User Id=sa;Password=${{ env.SA_PASSWORD }};TrustServerCertificate=True
+          ConnectionStrings__SaveLab: Server=localhost,1433;Database=SaveLab;User Id=sa;Password=${{ secrets.SA_PASSWORD }};TrustServerCertificate=True
         run: |
           dotnet run --project src/SaveLab.Api -c Release --no-build --no-launch-profile \
             --urls ${{ env.API_URL }} > "$GITHUB_WORKSPACE/api.log" 2>&1 &

@@ -192,9 +192,15 @@ Use **Run workflow** to run a heavier profile on demand:
 | `profile` | `smoke`, `load`, `stress`, `contention` |
 | `data_mode` | `sequential`, `random` |
 
-The SQL Server SA password lives in the workflow rather than in a repository secret. It is created
-and destroyed with the service container, is unreachable from outside the job, and is valid nowhere
-else - storing it as a secret would imply a confidentiality it does not have.
+The SQL Server SA password comes from the `SA_PASSWORD` repository secret. The credential itself is
+ephemeral - it is created and destroyed with the service container and is valid nowhere else - but
+keeping it out of the workflow file avoids a plaintext password that secret scanners cannot tell
+apart from a real one.
+
+To run this workflow on a fork, add a repository secret named `SA_PASSWORD` under
+**Settings > Secrets and variables > Actions**. It must satisfy the SQL Server password policy (at
+least 8 characters, mixing upper case, lower case, and digits or symbols) and must not contain a
+single quote, which would break the container health check.
 
 ## Environment variables
 

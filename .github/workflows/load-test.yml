@@ -35,12 +35,6 @@ jobs:
           MSSQL_SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
         ports:
           - 1433:1433
-        options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${{ secrets.SA_PASSWORD }}' -C -Q 'SELECT 1' -b"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 12
-          --health-start-period 30s
 
     steps:
       - name: Check out load tests
@@ -60,6 +54,27 @@ jobs:
       - name: Build API
         working-directory: api
         run: dotnet build src/SaveLab.Api -c Release
+
+      # Runs from a step rather than a service health-cmd: the services block cannot read secrets.
+      - name: Wait for SQL Server
+        env:
+          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
+        run: |
+          container=$(docker ps --filter ancestor=mcr.microsoft.com/mssql/server:2022-latest --format '{{.ID}}' | head -n 1)
+          if [ -z "$container" ]; then
+            echo "::error::SQL Server service container not found."
+            exit 1
+          fi
+          for attempt in $(seq 1 30); do
+            if docker exec "$container" /opt/mssql-tools18/bin/sqlcmd \
+                 -S localhost -U sa -P "$SA_PASSWORD" -C -Q 'SELECT 1' -b > /dev/null 2>&1; then
+              echo "SQL Server responded after ${attempt} attempt(s)."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::SQL Server did not become ready in time."
+          exit 1
 
       - name: Start API
         working-directory: api
